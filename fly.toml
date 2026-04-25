@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for payment-processing-service on 2026-04-24T01:11:16+05:30
+# fly.toml app configuration file generated for payment-processing-service on 2026-04-25T09:57:28Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -9,7 +9,7 @@ primary_region = 'sin'
 [build]
 
 [deploy]
-  release_command = ".venv/bin/alembic upgrade head"
+  release_command = '.venv/bin/alembic upgrade head'
 
 [http_service]
   internal_port = 8000
