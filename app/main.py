@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from sqlalchemy import text
 
+from app.api import events as events_router
 from app.db.engine import get_session
 
 app = FastAPI(title="Payment Reconciliation Service")
+app.include_router(events_router.router)
 
 
 @app.get("/health")

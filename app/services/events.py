@@ -102,10 +102,10 @@ def ingest_event(session: Session, event: EventIn) -> IngestResult:
                     first_event_at, last_event_at, has_conflict, conflict_reason
                 ) VALUES (
                     :txn_id, :merchant_id, :amount, :currency,
-                    :payment_status::payment_status,
-                    :settlement_status::settlement_status,
+                    CAST(:payment_status AS payment_status),
+                    CAST(:settlement_status AS settlement_status),
                     :event_ts, :event_ts, :has_conflict,
-                    :conflict_reason::conflict_reason
+                    CAST(:conflict_reason AS conflict_reason)
                 )
             """),
             {
@@ -129,7 +129,7 @@ def ingest_event(session: Session, event: EventIn) -> IngestResult:
                 amount, currency, event_timestamp, raw_payload
             ) VALUES (
                 :event_id, :txn_id, :merchant_id, :event_type,
-                :amount, :currency, :event_ts, :raw_payload::jsonb
+                :amount, :currency, :event_ts, CAST(:raw_payload AS jsonb)
             )
             ON CONFLICT (event_id) DO NOTHING
             RETURNING event_id
@@ -153,11 +153,11 @@ def ingest_event(session: Session, event: EventIn) -> IngestResult:
         session.execute(
             text("""
                 UPDATE transactions SET
-                    payment_status    = :payment_status::payment_status,
-                    settlement_status = :settlement_status::settlement_status,
+                    payment_status    = CAST(:payment_status AS payment_status),
+                    settlement_status = CAST(:settlement_status AS settlement_status),
                     last_event_at     = :event_ts,
                     has_conflict      = :has_conflict,
-                    conflict_reason   = :conflict_reason::conflict_reason
+                    conflict_reason   = CAST(:conflict_reason AS conflict_reason)
                 WHERE transaction_id = :txn_id
             """),
             {
