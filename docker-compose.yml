@@ -9,6 +9,11 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d payments"]
+      interval: 2s
+      timeout: 3s
+      retries: 10
 
   app:
     build: .
@@ -17,7 +22,11 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/payments
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c ".venv/bin/alembic upgrade head &&
+             .venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000"
 
 volumes:
   pgdata:
